@@ -1,18 +1,11 @@
-package com.example.TenantEase.model;
+package com.example.TenantEase.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-@Entity
 @Data
 @Accessors(chain = true)
-public class Tenant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class TenantResponseDto {
     private Long tenantId;
     private String name;
     private String email;

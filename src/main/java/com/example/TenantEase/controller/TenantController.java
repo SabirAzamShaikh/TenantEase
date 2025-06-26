@@ -1,6 +1,8 @@
 package com.example.TenantEase.controller;
 
 import com.example.TenantEase.dto.Message;
+import com.example.TenantEase.dto.TenantRequestDto;
+import com.example.TenantEase.dto.TenantResponseDto;
 import com.example.TenantEase.model.Tenant;
 import com.example.TenantEase.service.TenantService;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,8 @@ public class TenantController {
     }
 
     @RequestMapping("/addTenant")
-    public ResponseEntity<Message<Tenant>> addTenant(@RequestBody Tenant tenant) {
-        Message<Tenant> message = new Message<>();
+    public ResponseEntity<Message<TenantResponseDto>> addTenant(@RequestBody TenantRequestDto tenant) {
+        Message<TenantResponseDto> message = new Message<>();
         try {
             message = tenantService.addTenant(tenant);
             return ResponseEntity.status(message.getStatus()).body(message);
