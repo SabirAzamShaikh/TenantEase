@@ -11,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Log4j2
 public class TenantServiceImpl implements TenantService {
@@ -37,5 +39,22 @@ public class TenantServiceImpl implements TenantService {
             message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return message;
         }
+    }
+
+    @Override
+    public Message<List<TenantResponseDto>> getAllTenant() {
+Message<List<TenantResponseDto>> message=new Message<>();
+   try{
+    List<Tenant> ls= tenantRepository.findAll();
+   List<TenantResponseDto> response= ls.stream().map(tenantMapper::EntityToResponseDto).toList();
+   message.setData(response);
+   message.setResponseMessage("Tenant Response Data Fetch SuccessFully");
+message.setStatus(HttpStatus.OK);
+return message;
+   } catch (Exception e) {
+       message.setResponseMessage("Error Occurs While Fetching Data in getAllTenant() in TenantServiceImpl");
+       message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+       return message;
+   }
     }
 }

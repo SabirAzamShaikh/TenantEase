@@ -7,9 +7,12 @@ import com.example.TenantEase.model.Tenant;
 import com.example.TenantEase.service.TenantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tenant")
@@ -32,4 +35,17 @@ public class TenantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
+    @GetMapping("/getAllTenant")
+    public ResponseEntity<Message<List<TenantResponseDto>>> getAllTenant(){
+        Message<List<TenantResponseDto>> message=new Message<>();
+    try {
+        message=tenantService.getAllTenant();
+        return ResponseEntity.status(message.getStatus()).body(message);
+    } catch (Exception e) {
+        message.setResponseMessage("Internal Server Error Occurs at addTenant() in TenantController");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+    }
+
+    }
 }
+
