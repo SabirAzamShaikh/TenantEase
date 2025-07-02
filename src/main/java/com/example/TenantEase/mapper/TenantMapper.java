@@ -5,7 +5,7 @@ import com.example.TenantEase.dto.TenantResponseDto;
 import com.example.TenantEase.model.Tenant;
 
 public interface TenantMapper {
-    public  Tenant requestDtoToEntity(TenantRequestDto requestDto);
+    Tenant requestDtoToEntity(TenantRequestDto requestDto);
 
     TenantResponseDto EntityToResponseDto(Tenant tenant);
 }

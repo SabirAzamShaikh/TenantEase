@@ -35,17 +35,17 @@ public class TenantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
-    @GetMapping("/getAllTenant")
-    public ResponseEntity<Message<List<TenantResponseDto>>> getAllTenant(){
-        Message<List<TenantResponseDto>> message=new Message<>();
-    try {
-        message=tenantService.getAllTenant();
-        return ResponseEntity.status(message.getStatus()).body(message);
-    } catch (Exception e) {
-        message.setResponseMessage("Internal Server Error Occurs at addTenant() in TenantController");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-    }
 
+    @GetMapping("/getAllTenant")
+    public ResponseEntity<Message<List<TenantResponseDto>>> getAllTenant() {
+        Message<List<TenantResponseDto>> message = new Message<>();
+        try {
+            message = tenantService.getAllTenant();
+            return ResponseEntity.status(message.getStatus()).body(message);
+        } catch (Exception e) {
+            message.setResponseMessage("Internal Server Error Occurs at getAllTenant() in TenantController " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
     }
 }
 

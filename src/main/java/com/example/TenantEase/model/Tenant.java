@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @Accessors(chain = true)
-public class Tenant {
+public class Tenant implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tenantId;
@@ -20,5 +22,5 @@ public class Tenant {
     private String adharNumber;
     private String roomNumber;
     private String depositeAmount;
-    private boolean istenant;
+    private boolean isTenant;
 }
