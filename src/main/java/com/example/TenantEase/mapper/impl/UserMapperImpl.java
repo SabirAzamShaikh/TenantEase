@@ -20,6 +20,7 @@ public class UserMapperImpl implements UserMapper {
         return new User().setUserType(dto.getUserType()).setCreatedBy("SUPER_ADMIN")
                 .setEmail(dto.getEmail()).setContactNumber(dto.getContactNumber())
                 .setFullName(dto.getFullName()).setStatus("Active").setRoles(hs)
-                .setCreatedAt(LocalDateTime.now()).setPassword(dto.getFullName().replaceAll("\\s+", "") + random.nextInt(4));
+                .setCreatedAt(LocalDateTime.now()).setPassword(dto.getPassword());
+                //.setPassword(dto.getFullName().replaceAll("\\s+", "") + random.nextInt(4));
     }
 }

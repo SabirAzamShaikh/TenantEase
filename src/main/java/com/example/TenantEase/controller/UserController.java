@@ -1,6 +1,5 @@
 package com.example.TenantEase.controller;
 
-import com.example.TenantEase.Repository.UserRepository;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.UserRequestDto;
 import com.example.TenantEase.model.User;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -40,9 +39,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String userLogin(@RequestParam("email") String email,@RequestParam("password") String password){
+    public ResponseEntity<Message<String>> userLogin(@RequestParam("email") String email,@RequestParam("password") String password){
         Message<String> result=userService.userLogin(email,password);
-        return "";
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/getAllUser")

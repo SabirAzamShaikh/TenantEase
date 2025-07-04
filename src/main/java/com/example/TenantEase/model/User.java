@@ -13,6 +13,7 @@ import java.util.Set;
 @Accessors(chain = true)
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
     private String fullName;
     private String password;

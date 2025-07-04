@@ -76,16 +76,17 @@ public class UserServiceImpl implements UserService {
             // Check if user exists
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User Not Found With Email " + email));
-
+            log.debug("Running Till here T1");
             // Authenticate with raw password
             Authentication authentication = manager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
+            log.debug("Running Till here T2");
 
             // Check authentication status
             if (authentication.isAuthenticated()) {
                 message.setStatus(HttpStatus.OK);
-                message.setResponseMessage("Authenticated");
+                message.setResponseMessage("User is Authenticated");
                 message.setData("AUTHENTICATED");
                 return message;
             } else {
