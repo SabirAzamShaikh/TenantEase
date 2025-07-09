@@ -4,6 +4,7 @@ import com.example.TenantEase.Repository.RoleRepository;
 import com.example.TenantEase.Repository.UserRepository;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.UserRequestDto;
+import com.example.TenantEase.jwt.JwtUtil;
 import com.example.TenantEase.mapper.UserMapper;
 import com.example.TenantEase.model.Role;
 import com.example.TenantEase.model.User;
@@ -31,13 +32,14 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
-
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, AuthenticationManager manager, PasswordEncoder encoder) {
+    private final JwtUtil jwtUtil;
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, AuthenticationManager manager, PasswordEncoder encoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.manager = manager;
         this.encoder = encoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -85,9 +87,10 @@ public class UserServiceImpl implements UserService {
 
             // Check authentication status
             if (authentication.isAuthenticated()) {
+            String token=jwtUtil.generateToken(email,authentication.getAuthorities());
                 message.setStatus(HttpStatus.OK);
                 message.setResponseMessage("User is Authenticated");
-                message.setData("AUTHENTICATED");
+                message.setData(token);
                 return message;
             } else {
                 message.setStatus(HttpStatus.UNAUTHORIZED);
