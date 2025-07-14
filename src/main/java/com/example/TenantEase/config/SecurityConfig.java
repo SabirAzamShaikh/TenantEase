@@ -34,11 +34,9 @@ public class SecurityConfig {
                         "/swagger-ui.html",     // Main Swagger UI Page
                         "/v3/api-docs",         // API Docs JSON
                         "/swagger-resources/**" // Swagger Resources
-                ).permitAll()
-                  //      .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")
-                        .requestMatchers("/user/getAllUser/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
-
-                        //  .requestMatchers("/user/getAllUser").hasRole("USER")
+                ).permitAll()//Application-Maker==SUPER_ADMIN
+                        .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN
+                          .requestMatchers(RoleApiConstant.USER).hasRole("USER")//Tenant==USER
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -53,5 +51,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

@@ -1,33 +1,97 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Ignore all build directories
+**/target/
+**/build/
+**/out/
+**/bin/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Ignore Gradle files
+.gradle/
+**/*.gradle
+**/gradle-app.setting
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# Ignore Maven files
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Ignore IntelliJ IDEA files
+.idea/
 *.iml
 *.ipr
+*.iws
+**/*.idea/
+**/*.iml
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Ignore Eclipse files
+.settings/
+.project
+.classpath
+**/.metadata/
+**/*.classpath
+**/*.project
 
-### VS Code ###
+# Ignore VSCode files
 .vscode/
+
+# Ignore logs and temp files
+**/*.log
+**/logs/
+**/*.bak
+**/*.swp
+**/*.swo
+**/*.tmp
+
+# Ignore dependency files (e.g., lib/, node_modules/)
+**/lib/
+**/node_modules/
+#
+## Ignore local configuration files
+#**/application.properties
+#**/application.yml
+#**/application-*.properties
+#**/application-*.yml
+
+# Ignore Docker files
+**/docker-compose.yml
+**/Dockerfile
+**/.dockerignore
+
+# Ignore test reports and coverage
+**/test-output/
+**/coverage/
+**/reports/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Spring Boot specific files
+**/spring-boot-devtools.properties
+
+# Ignore any other generated or temporary files
+**/*.class
+**/*.jar
+**/*.war
+**/*.ear
+**/*.zip
+**/*.tar.gz
+**/*.bak
+**/*.orig
+**/*.rej
+**/*.log
+**/*.pid
+**/*.seed
+**/*.pid.lock
+**/*.h2.db
+**/*.mv.db
+**/*.trace
+**/*.hprof
+**/*.dump
+**/*.stackdump
+**/*.heapdump
+**/*.jfr
+**/*.jfr
+**/*.jfr
+**/*.jfr
+target/classes/application.yaml

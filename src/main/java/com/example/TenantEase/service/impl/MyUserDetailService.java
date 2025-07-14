@@ -2,6 +2,7 @@ package com.example.TenantEase.service.impl;
 
 import com.example.TenantEase.Repository.UserRepository;
 import com.example.TenantEase.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MyUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
@@ -35,10 +37,9 @@ public class MyUserDetailService implements UserDetailsService {
         Set<GrantedAuthority> roleAuthorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getDescription()))
                 .collect(Collectors.toSet());
-
         // Merge permissions + roles
 //        authorities.addAll(roleAuthorities);
-
+        log.info("User Authorities in MyUserDetailService {}",roleAuthorities);
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),

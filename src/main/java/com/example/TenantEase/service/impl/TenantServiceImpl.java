@@ -62,4 +62,25 @@ public class TenantServiceImpl implements TenantService {
             return message;
         }
     }
+
+    @Override
+    public Message<TenantResponseDto> getTenantById(long id) {
+        Message<TenantResponseDto> message = new Message<>();
+        try {
+            Tenant tenant = tenantRepository.findById(id).orElse(null);
+            if (tenant != null) {
+                message.setStatus(HttpStatus.OK);
+                message.setResponseMessage("Tenant Find SuccessFully");
+                message.setData(tenantMapper.EntityToResponseDto(tenant));
+                return message;
+            }
+            message.setStatus(HttpStatus.NOT_FOUND);
+            message.setResponseMessage("Tenant Not Find With Id :" + id);
+            return message;
+        } catch (Exception e) {
+            message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            message.setResponseMessage("Error Occurs At getTenantById() in TenantServiceImpl");
+            return message;
+        }
+    }
 }

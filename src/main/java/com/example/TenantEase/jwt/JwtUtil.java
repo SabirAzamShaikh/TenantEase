@@ -24,12 +24,8 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
-        List<String> perms = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-      log.info("Authorities  {}",perms);
-        return Jwts.builder().setSubject(username).setIssuedAt(new Date()).signWith(getKey(), SignatureAlgorithm.HS256).claim("authorities", perms)
+    public String generateToken(String username) {
+        return Jwts.builder().setSubject(username).setIssuedAt(new Date()).signWith(getKey(), SignatureAlgorithm.HS256)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).compact();
     }
 

@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
             // Check authentication status
             if (authentication.isAuthenticated()) {
-            String token=jwtUtil.generateToken(email,authentication.getAuthorities());
+            String token=jwtUtil.generateToken(email);
                 message.setStatus(HttpStatus.OK);
                 message.setResponseMessage("User is Authenticated");
                 message.setData(token);

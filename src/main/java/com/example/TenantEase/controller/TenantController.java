@@ -7,10 +7,7 @@ import com.example.TenantEase.model.Tenant;
 import com.example.TenantEase.service.TenantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,5 +44,19 @@ public class TenantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
+
+    @GetMapping("/getById")
+    public ResponseEntity<Message<TenantResponseDto>> getTenantById(@RequestParam long id) {
+        Message<TenantResponseDto> message = new Message<>();
+        try {
+            message = tenantService.getTenantById(id);
+            return ResponseEntity.status(message.getStatus()).body(message);
+        } catch (Exception e) {
+            message.setResponseMessage("Internal Server Error Occurs at getTenantById() in TenantController " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
+
+    }
+
 }
 

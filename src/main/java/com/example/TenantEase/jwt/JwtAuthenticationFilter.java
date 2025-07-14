@@ -39,29 +39,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         String token = header.substring(7);
         String username = util.extractUsername(token);
-        Claims claims = util.extractAllClaims(token);
-        List<String> authorities = claims.get("authorities", List.class);
-
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // Optional DB lookup to verify user still exists / not disabled
             UserDetails userDetails = userDetailService.loadUserByUsername(username);
-
             if (util.validateToken(token, userDetails.getUsername())) {
-                var grantedAuthorities = authorities.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-                 log.info("THe Granted Authorities Taken From Token {}",grantedAuthorities);
-
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorities);
-
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                log.info("User Authorities in JwtAuthenticationFilter{}",userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
