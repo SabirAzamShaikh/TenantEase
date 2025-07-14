@@ -10,4 +10,6 @@ public interface TenantService {
 
     Message<TenantResponseDto> addTenant(TenantRequestDto tenant);
     Message<List<TenantResponseDto>> getAllTenant();
+
+    Message<TenantResponseDto> getTenantById(long id);
 }
