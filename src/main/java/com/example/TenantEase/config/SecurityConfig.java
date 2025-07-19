@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -27,19 +28,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "/v3/api-docs/**",     // OpenAPI Docs
+        return http.csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "/v3/api-docs/**",     // OpenAPI Docs
                         "/swagger-ui/**",       // Swagger UI HTML
                         "/swagger-ui.html",     // Main Swagger UI Page
                         "/v3/api-docs",         // API Docs JSON
                         "/swagger-resources/**" // Swagger Resources
-                ).permitAll()//Application-Maker==SUPER_ADMIN
-                        .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN
-                          .requestMatchers(RoleApiConstant.USER).hasRole("USER")//Tenant==USER
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                ).permitAll().requestMatchers(RoleApiConstant.SUPER_ADMIN).hasRole("SUPER_ADMIN")//Application-Maker==SUPER_ADMIN
+                .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN
+                .requestMatchers(RoleApiConstant.USER).hasAnyRole("SUPER_ADMIN", "USER")//Tenant==USER
+                .anyRequest().authenticated()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Bean
