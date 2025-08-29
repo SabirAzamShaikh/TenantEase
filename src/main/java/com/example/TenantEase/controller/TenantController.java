@@ -55,8 +55,6 @@ public class TenantController {
             message.setResponseMessage("Internal Server Error Occurs at getTenantById() in TenantController " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
-
     }
-
 }
 
