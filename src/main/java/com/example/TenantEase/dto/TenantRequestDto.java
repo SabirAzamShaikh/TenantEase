@@ -32,4 +32,6 @@ public class TenantRequestDto {
     private String floorNumber;
 
     private String depositeAmount;
+    @NotBlank(message = "Tenant Rent is required")
+    private Long tenantRent;
 }

@@ -2,6 +2,7 @@ package com.example.TenantEase.controller;
 
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.UserRequestDto;
+import com.example.TenantEase.dto.UserloginResponseDto;
 import com.example.TenantEase.model.User;
 import com.example.TenantEase.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Message<String>> userLogin(@RequestParam("email") String email,@RequestParam("password") String password){
-        Message<String> result=userService.userLogin(email,password);
+    public ResponseEntity<Message<UserloginResponseDto>> userLogin(@RequestParam("email") String email,@RequestParam("password") String password){
+        Message<UserloginResponseDto> result=userService.userLogin(email,password);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

@@ -1,13 +1,12 @@
 package com.example.TenantEase.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +22,9 @@ public class Tenant implements Serializable {
     private String roomNumber;
     private String depositeAmount;
     private boolean isTenant;
+    private int totalStayMonth;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<TenantRent> rents;
+    private LocalDate createTime;
+    private Long rentAmount;
 }

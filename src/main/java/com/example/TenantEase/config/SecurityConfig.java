@@ -1,5 +1,6 @@
 package com.example.TenantEase.config;
 
+import com.example.TenantEase.exception.CustomAccessDeniedHandler;
 import com.example.TenantEase.jwt.JwtAuthenticationFilter;
 import com.example.TenantEase.util.RoleApiConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,24 +21,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     @Autowired
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomAccessDeniedHandler accessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "/v3/api-docs/**",     // OpenAPI Docs
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/login", "/v3/api-docs/**",     // OpenAPI Docs
                         "/swagger-ui/**",       // Swagger UI HTML
                         "/swagger-ui.html",     // Main Swagger UI Page
                         "/v3/api-docs",         // API Docs JSON
-                        "/swagger-resources/**" // Swagger Resources
+                        "/swagger-resources/**", // Swagger Resources
+                        "/user/register"
                 ).permitAll()//Application-Maker==SUPER_ADMIN
+                        .requestMatchers(RoleApiConstant.SUPER_ADMIN).hasRole("SUPER_ADMIN")
                         .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN
                           .requestMatchers(RoleApiConstant.USER).hasRole("USER")//Tenant==USER
                         .anyRequest().authenticated())
+                .exceptionHandling(ex->ex.accessDeniedHandler(accessDeniedHandler))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
