@@ -13,4 +13,5 @@ public class TenantRent {
     private Long rentId;
     private int monthNumber;
     private Long dueOfThisMonth;
+    private boolean isPaid;
 }
