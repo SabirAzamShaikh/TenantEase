@@ -46,7 +46,7 @@ public class TenantController {
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<Message<TenantResponseDto>> getTenantById(@RequestParam long id) {
+    public ResponseEntity<Message<TenantResponseDto>> getTenantById(@RequestParam("id") long id) {
         Message<TenantResponseDto> message = new Message<>();
         try {
             message = tenantService.getTenantById(id);

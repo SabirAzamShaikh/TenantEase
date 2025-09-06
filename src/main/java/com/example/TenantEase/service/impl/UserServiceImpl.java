@@ -4,6 +4,7 @@ import com.example.TenantEase.Repository.RoleRepository;
 import com.example.TenantEase.Repository.UserRepository;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.UserRequestDto;
+import com.example.TenantEase.dto.UserloginResponseDto;
 import com.example.TenantEase.jwt.JwtUtil;
 import com.example.TenantEase.mapper.UserMapper;
 import com.example.TenantEase.model.Role;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
+
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, AuthenticationManager manager, PasswordEncoder encoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -72,8 +74,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Message<String> userLogin(String email, String password) {
-        Message<String> message = new Message<>();
+    public Message<UserloginResponseDto> userLogin(String email, String password) {
+        Message<UserloginResponseDto> message = new Message<>();
         try {
             // Check if user exists
             User user = userRepository.findByEmail(email)
@@ -87,15 +89,14 @@ public class UserServiceImpl implements UserService {
 
             // Check authentication status
             if (authentication.isAuthenticated()) {
-            String token=jwtUtil.generateToken(email);
+                String token = jwtUtil.generateToken(email);
                 message.setStatus(HttpStatus.OK);
                 message.setResponseMessage("User is Authenticated");
-                message.setData(token);
+                message.setData(new UserloginResponseDto().setToken(token).setUser(user));
                 return message;
             } else {
                 message.setStatus(HttpStatus.UNAUTHORIZED);
                 message.setResponseMessage("Authentication failed");
-                message.setData("UNAUTHENTICATED");
                 return message;
             }
         } catch (UsernameNotFoundException e) {

@@ -32,7 +32,7 @@ public class RoleController {
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<Message<Role>> getById(@RequestParam int id){
+    public ResponseEntity<Message<Role>> getById(@RequestParam("id") int id){
         Message<Role> message=new Message<>();
         try
         {

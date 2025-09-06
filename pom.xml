@@ -8,7 +8,6 @@
 		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<packaging>war</packaging>
 	<groupId>com.example</groupId>
 	<artifactId>TenantEase</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -97,12 +96,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
 	</dependencies>
 
 	<build>
