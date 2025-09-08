@@ -11,5 +11,8 @@ public interface TenantService {
     Message<TenantResponseDto> addTenant(TenantRequestDto tenant);
     Message<List<TenantResponseDto>> getAllTenant();
 
+    //    @Cacheable(value = "tenant")
+    Message<List<TenantResponseDto>> getAllTenantByOwner(String ownerName);
+
     Message<TenantResponseDto> getTenantById(long id);
 }

@@ -3,7 +3,6 @@ package com.example.TenantEase.controller;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.TenantRequestDto;
 import com.example.TenantEase.dto.TenantResponseDto;
-import com.example.TenantEase.model.Tenant;
 import com.example.TenantEase.service.TenantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class TenantController {
         this.tenantService = tenantService;
     }
 
-    @RequestMapping("/addTenant")
+    @PostMapping("/addTenant")
     public ResponseEntity<Message<TenantResponseDto>> addTenant(@RequestBody TenantRequestDto tenant) {
         Message<TenantResponseDto> message = new Message<>();
         try {
@@ -33,11 +32,25 @@ public class TenantController {
         }
     }
 
+    //SUPER_ADMIN API to see All tenant
     @GetMapping("/getAllTenant")
     public ResponseEntity<Message<List<TenantResponseDto>>> getAllTenant() {
         Message<List<TenantResponseDto>> message = new Message<>();
         try {
             message = tenantService.getAllTenant();
+            return ResponseEntity.status(message.getStatus()).body(message);
+        } catch (Exception e) {
+            message.setResponseMessage("Internal Server Error Occurs at getAllTenant() in TenantController " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
+    }
+
+
+    @GetMapping("/getAllTenantAsPerOwner")
+    public ResponseEntity<Message<List<TenantResponseDto>>> getAllTenantByOwner(@RequestParam("ownerName") String ownerName) {
+        Message<List<TenantResponseDto>> message = new Message<>();
+        try {
+            message = tenantService.getAllTenantByOwner(ownerName);
             return ResponseEntity.status(message.getStatus()).body(message);
         } catch (Exception e) {
             message.setResponseMessage("Internal Server Error Occurs at getAllTenant() in TenantController " + e.getMessage());

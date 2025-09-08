@@ -7,17 +7,14 @@ import com.example.TenantEase.dto.TenantResponseDto;
 import com.example.TenantEase.mapper.TenantMapper;
 import com.example.TenantEase.model.Tenant;
 import com.example.TenantEase.service.TenantService;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@Log4j2
+@Slf4j
 public class TenantServiceImpl implements TenantService {
     private final TenantRepository tenantRepository;
     private final TenantMapper tenantMapper;
@@ -39,6 +36,7 @@ public class TenantServiceImpl implements TenantService {
             message.setData(tenantMapper.EntityToResponseDto(savedTenant));
             return message;
         } catch (Exception e) {
+            log.info("Error Occured while Saving Tenant Details {}", e.getMessage());
             message.setResponseMessage("Some Error Occurs While Saving the Tenant");
             message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             return message;
@@ -62,6 +60,24 @@ public class TenantServiceImpl implements TenantService {
             return message;
         }
     }
+
+    @Override
+    public Message<List<TenantResponseDto>> getAllTenantByOwner(String ownerName) {
+        Message<List<TenantResponseDto>> message = new Message<>();
+        try {
+            List<Tenant> ls = tenantRepository.findAllByCreatedBy(ownerName);
+            List<TenantResponseDto> response = ls.stream().map(tenantMapper::EntityToResponseDto).toList();
+            message.setData(response);
+            message.setResponseMessage("Tenant Response Data Fetch SuccessFully");
+            message.setStatus(HttpStatus.OK);
+            return message;
+        } catch (Exception e) {
+            message.setResponseMessage("Error Occurs While Fetching Data in getAllTenant() in TenantServiceImpl");
+            message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            return message;
+        }
+    }
+
 
     @Override
     public Message<TenantResponseDto> getTenantById(long id) {

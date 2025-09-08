@@ -4,14 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.security.Key;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -56,6 +57,26 @@ public class JwtUtil {
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public String extractTokenFromRequest() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                return authHeader.substring(7);
+            }
+        }
+        return null;
+    }
+
+    public String getLoggedInUsername() {
+        String token = extractTokenFromRequest();
+        if (token != null) {
+            return extractUsername(token);
+        }
+        return null;
     }
 
 }
