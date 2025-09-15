@@ -3,6 +3,7 @@ package com.example.TenantEase.dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Data
 @Accessors(chain = true)
@@ -15,4 +16,5 @@ public class TenantResponseDto implements Serializable {
     private String roomNumber;
     private String depositeAmount;
     private boolean istenant;
+    private LocalDate createdDate;
 }

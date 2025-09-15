@@ -1,6 +1,7 @@
 package com.example.TenantEase.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ public class TenantRentRequestDto {
     @NotNull(message = "You Should have to enter is either paid or not")
     private boolean isPaid;
     @NotNull(message = "Rent Amount cannot be null")
+    @Size(min = 1)
     private long rentAmount;
     @NotNull(message = "Month Number cannot be null")
     private int monthNumber;

@@ -23,19 +23,28 @@ public class RentServiceImpl implements RentService {
 
     @Override
     public Message<?> addRentDoneByTenant(TenantRentRequestDto rentRequestDto) {
-Message<?> message=new Message<>();
-        try{
-        log.info("In RentServiceImpl addRentDoneByTenant with Request Dto {}", rentRequestDto);
-        Tenant tenant = tenantRepository.findById(rentRequestDto.getTenantId()).orElse(null);
-        if (tenant == null) {
-            message.setResponseMessage("Tenant Not Found With ID " + rentRequestDto.getTenantId());
-            message.setStatus(HttpStatus.NOT_FOUND);
-            return message;
-        }
-
+        Message<?> message = new Message<>();
+        try {
+            log.info("In RentServiceImpl addRentDoneByTenant with Request Dto {}", rentRequestDto);
+            Tenant tenant = tenantRepository.findById(rentRequestDto.getTenantId()).orElse(null);
+            if (tenant == null) {
+                message.setResponseMessage("Tenant Not Found With ID " + rentRequestDto.getTenantId());
+                message.setStatus(HttpStatus.NOT_FOUND);
+                return message;
+            }
+            if (rentRequestDto.getYear() < tenant.getCreateTime().getYear()) {
+                message.setResponseMessage("Tenant has Come After " + rentRequestDto.getYear());
+                message.setStatus(HttpStatus.BAD_REQUEST);
+                return message;
+            }
+            if (rentRequestDto.getMonthNumber() < tenant.getCreateTime().getMonthValue()) {
+                message.setResponseMessage("Tenant has Come After " + rentRequestDto.getMonthNumber());
+                message.setStatus(HttpStatus.BAD_REQUEST);
+                return message;
+            }
         } catch (Exception e) {
-    throw new RuntimeException(e);
-}
+            throw new RuntimeException(e);
+        }
         return null;
     }
 

@@ -15,6 +15,6 @@ public class TenantRent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rentId;
     private int monthNumber;
-    private Long dueOfThisMonth;
+    private Long dueOfThisMonth;//How much Money do they Have TO pay
     private boolean isPaid;
 }
