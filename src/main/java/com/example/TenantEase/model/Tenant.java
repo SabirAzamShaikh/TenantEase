@@ -1,10 +1,9 @@
 package com.example.TenantEase.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,14 +24,21 @@ public class Tenant implements Serializable {
     @Column(nullable = false)
     private String adharNumber;
     private String roomNumber;
-    private String depositeAmount;
+    private Long depositeAmount;
     private boolean isTenant;
     private int totalStayMonth;
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tenant_id") // 👈 this is key
     private List<TenantRent> rents;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", nullable = false)
+    @JsonIgnore
+    private Room room; // Room assigned to tenant
     @Column(nullable = false)
     private LocalDate createTime;
     private String createdBy;
     @Column(nullable = false)
     private Long rentAmount;
+    private int rentPaymentDay;
 }

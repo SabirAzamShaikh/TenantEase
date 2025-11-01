@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TenantRentRepository extends JpaRepository<TenantRent,Long> {
+//    boolean existsByTenant_TenantIdAndMonthNumberAndYear(Long tenantId, int monthNumber, int year);
 }

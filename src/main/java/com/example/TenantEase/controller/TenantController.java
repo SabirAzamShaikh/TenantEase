@@ -20,10 +20,10 @@ public class TenantController {
     }
 
     @PostMapping("/addTenant")
-    public ResponseEntity<Message<TenantResponseDto>> addTenant(@RequestBody TenantRequestDto tenant) {
+    public ResponseEntity<Message<TenantResponseDto>> addTenant(@RequestBody TenantRequestDto tenant,@RequestParam Long roomId) {
         Message<TenantResponseDto> message = new Message<>();
         try {
-            message = tenantService.addTenant(tenant);
+            message = tenantService.addTenant(tenant,roomId);
             return ResponseEntity.status(message.getStatus()).body(message);
         } catch (Exception e) {
             message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);

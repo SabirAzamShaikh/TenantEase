@@ -27,18 +27,27 @@ public class TenantMapperImpl implements TenantMapper {
         // Extract username fresh for each request
         String token = util.extractTokenFromRequest();
         String username = (token != null) ? util.extractUsername(token) : null;
+//This is for Actual Production For Same month
+//        TenantRent rent = new TenantRent().setMonthNumber(LocalDate.now().getMonthValue()).setDueOfThisMonth(requestDto.getTenantRent()).setPaid(false).setYear(LocalDate.now().getYear())
+//                .setDueDate(LocalDate.now().withDayOfMonth(requestDto.getPaymentDay()));
+        LocalDate today = LocalDate.now();
 
-        TenantRent rent = new TenantRent().setMonthNumber(LocalDate.now().getMonthValue()).setDueOfThisMonth(requestDto.getTenantRent()).setPaid(false);
+// For testing, let's backdate to previous month
+        LocalDate lastMonthDate = today.minusMonths(1);
 
+// Clamp the day (so you don't get DateTimeException for shorter months)
+        int safeDay = Math.min(requestDto.getRentPaymentDay(), lastMonthDate.lengthOfMonth());
+
+        TenantRent rent = new TenantRent().setMonthNumber(lastMonthDate.getMonthValue()).setYear(lastMonthDate.getYear()).setDueOfThisMonth(requestDto.getTenantRent()).setPaid(false).setDueDate(lastMonthDate.withDayOfMonth(safeDay));
         TenantRent savedRent = rentRepository.save(rent);
 
         return new Tenant().setEmail(requestDto.getEmail()).setTenant(true).setName(requestDto.getName()).setPhoneNumber(requestDto.getPhoneNumber()).setAdharNumber(requestDto.getAdharNumber()).setCreatedBy(username) // ✅ token-based username
-                .setRents(List.of(savedRent)).setDepositeAmount(requestDto.getDepositeAmount()).setCreateTime(LocalDate.now()).setTotalStayMonth(0).setRentAmount(requestDto.getTenantRent());
+                .setRents(List.of(savedRent)).setDepositeAmount(requestDto.getDepositeAmount()).setCreateTime(LocalDate.now()).setTotalStayMonth(0).setRentAmount(requestDto.getTenantRent()).setRentPaymentDay(requestDto.getRentPaymentDay());
     }
 
 
     @Override
     public TenantResponseDto EntityToResponseDto(Tenant tenant) {
-        return new TenantResponseDto().setTenantId(tenant.getTenantId()).setRoomNumber(tenant.getRoomNumber()).setIstenant(tenant.isTenant()).setDepositeAmount(tenant.getDepositeAmount()).setAdharNumber(tenant.getAdharNumber()).setPhoneNumber(tenant.getPhoneNumber()).setEmail(tenant.getEmail()).setName(tenant.getName()).setCreatedDate(tenant.getCreateTime());
+        return new TenantResponseDto().setTenantId(tenant.getTenantId()).setRoomNumber(tenant.getRoomNumber()).setIstenant(tenant.isTenant()).setDepositeAmount(tenant.getDepositeAmount()).setAdharNumber(tenant.getAdharNumber()).setPhoneNumber(tenant.getPhoneNumber()).setEmail(tenant.getEmail()).setName(tenant.getName()).setCreatedDate(tenant.getCreateTime()).setRents(tenant.getRents());
     }
 }

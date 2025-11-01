@@ -1,9 +1,11 @@
 package com.example.TenantEase.dto;
 
+import com.example.TenantEase.model.TenantRent;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -14,7 +16,8 @@ public class TenantResponseDto implements Serializable {
     private String phoneNumber;
     private String adharNumber;
     private String roomNumber;
-    private String depositeAmount;
+    private Long depositeAmount;
     private boolean istenant;
     private LocalDate createdDate;
+    private List<TenantRent> rents;
 }

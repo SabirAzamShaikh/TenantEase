@@ -1,9 +1,6 @@
 package com.example.TenantEase.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -31,7 +28,14 @@ public class TenantRequestDto {
 
     private String floorNumber;
 
-    private String depositeAmount;
-    @NotBlank(message = "Tenant Rent is required")
+    private Long depositeAmount;
+    @NotNull(message = "Tenant Rent is required")
+    @Positive(message = "Tenant Rent must be > 0")
     private Long tenantRent;
+
+    @NotNull(message = "Payment Day is required")
+    @Min(value = 1, message = "Payment day must be at least 1")
+    @Max(value = 28, message = "Payment day must not exceed 28 to avoid invalid dates")
+    private Integer rentPaymentDay;
+
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TenantService {
 
-    Message<TenantResponseDto> addTenant(TenantRequestDto tenant);
+    Message<TenantResponseDto> addTenant(TenantRequestDto tenant, Long roomId);
     Message<List<TenantResponseDto>> getAllTenant();
 
     //    @Cacheable(value = "tenant")
