@@ -17,6 +17,6 @@ public Property requestToEntity(PropertyRequestDto requestDto) {
 public PropertyResponseDto entityToResponseDto(Property property) {
         return new PropertyResponseDto().setPropertyId(property.getPropertyId()).setOwnerName(property.getOwnerName())
                 .setRooms(property.getRooms()).setTotalRooms(property.getTotalRooms()).setName(property.getName())
-                .setType(property.getType()).setAddress(property.getAddress()).setTotalFloors(property.getTotalFloors());
+                .setType(property.getType()).setAddress(property.getAddress()).setTotalFloors(property.getTotalFloors()).setPropertyImagePath(property.getPropertyImagePath());
     }
 }

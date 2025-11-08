@@ -27,4 +27,6 @@ public class PropertyResponseDto {
     private  int totalFloors; //Total floors in this property
 
     private List<Room> rooms; // List of rooms
+
+    private List<String> propertyImagePath;
 }

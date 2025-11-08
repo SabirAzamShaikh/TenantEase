@@ -34,5 +34,8 @@ public class Property {
     private  int totalFloors; //Total floors in this property
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
     private List<Room> rooms; // List of rooms
+
+    @ElementCollection
+    private List<String> propertyImagePath;
 }
 
