@@ -69,5 +69,17 @@ public class TenantController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
         }
     }
+
+    @GetMapping("/getByEmail")
+    public ResponseEntity<Message<TenantResponseDto>> getTenantByEmail(@RequestParam("email") String email) {
+        Message<TenantResponseDto> message = new Message<>();
+        try {
+            message = tenantService.getTenantByEmail(email);
+            return ResponseEntity.status(message.getStatus()).body(message);
+        } catch (Exception e) {
+            message.setResponseMessage("Internal Server Error Occurs at getTenantByEmail() in TenantController " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
+    }
 }
 

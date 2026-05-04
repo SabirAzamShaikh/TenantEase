@@ -15,4 +15,6 @@ public interface TenantService {
     Message<List<TenantResponseDto>> getAllTenantByOwner(String ownerName);
 
     Message<TenantResponseDto> getTenantById(long id);
+
+    Message<TenantResponseDto> getTenantByEmail(String email);
 }

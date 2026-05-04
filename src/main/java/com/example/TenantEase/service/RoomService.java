@@ -1,15 +1,19 @@
 package com.example.TenantEase.service;
 
-import com.example.TenantEase.model.Room;
+
+import com.example.TenantEase.dto.RoomRequestDTO;
+import com.example.TenantEase.dto.RoomResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
-    Room addRoom(Room room, Long propertyId);
-    Room updateRoom(Long roomId, Room updatedRoom);
-    void deleteRoom(Long roomId);
-    List<Room> getAllRooms();
-    Optional<Room> getRoomById(Long roomId);
-    List<Room> getRoomsByProperty(Long propertyId);
+    RoomResponseDTO addRoom(RoomRequestDTO roomRequestDTO, Long propertyId);
+    RoomResponseDTO updateRoom(Long id, RoomRequestDTO roomRequestDTO);
+    void deleteRoom(Long id);
+    List<RoomResponseDTO> getAllRooms();
+    Optional<RoomResponseDTO> getRoomById(Long id);
+    List<RoomResponseDTO> getRoomsByProperty(Long propertyId);
+
+    List<RoomResponseDTO> getRoomsByOwner(String username);
 }

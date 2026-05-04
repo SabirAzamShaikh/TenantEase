@@ -136,4 +136,26 @@ public class TenantServiceImpl implements TenantService {
             return message;
         }
     }
+
+    @Override
+    public Message<TenantResponseDto> getTenantByEmail(String email) {
+        Message<TenantResponseDto> message = new Message<>();
+        try {
+            Tenant tenant = tenantRepository.findByEmail(email).orElse(null);
+            if (tenant != null) {
+                message.setStatus(HttpStatus.OK);
+                message.setResponseMessage("Tenant Found Successfully");
+                message.setData(tenantMapper.EntityToResponseDto(tenant));
+                return message;
+            }
+            message.setStatus(HttpStatus.NOT_FOUND);
+            message.setResponseMessage("Tenant Not Found With Email: " + email);
+            return message;
+        } catch (Exception e) {
+            log.error("Error Occurs At getTenantByEmail() in TenantServiceImpl: {}", e.getMessage());
+            message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            message.setResponseMessage("Error Occurs While Fetching Tenant By Email");
+            return message;
+        }
+    }
 }

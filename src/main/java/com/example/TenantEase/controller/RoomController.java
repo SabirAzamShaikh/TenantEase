@@ -1,12 +1,14 @@
 package com.example.TenantEase.controller;
 
-import com.example.TenantEase.model.Room;
+import com.example.TenantEase.dto.RoomRequestDTO;
+import com.example.TenantEase.dto.RoomResponseDTO;
 import com.example.TenantEase.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/rooms")
@@ -15,14 +17,14 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @PostMapping("/addRoom")
-    public ResponseEntity<Room> addRoom(@RequestBody Room room,@RequestParam Long propertyId) {
-        return ResponseEntity.ok(roomService.addRoom(room,propertyId));
+    @PostMapping(value = "/addRoom", consumes = { "multipart/form-data" })
+    public ResponseEntity<RoomResponseDTO> addRoom(@ModelAttribute RoomRequestDTO roomRequestDTO, @RequestParam Long propertyId) {
+        return ResponseEntity.ok(roomService.addRoom(roomRequestDTO, propertyId));
     }
 
     @PutMapping("/updateRoom")
-    public ResponseEntity<Room> updateRoom(@RequestParam Long id, @RequestBody Room updatedRoom) {
-        return ResponseEntity.ok(roomService.updateRoom(id, updatedRoom));
+    public ResponseEntity<RoomResponseDTO> updateRoom(@RequestParam Long id, @RequestBody RoomRequestDTO updatedRoomDTO) {
+        return ResponseEntity.ok(roomService.updateRoom(id, updatedRoomDTO));
     }
 
     @DeleteMapping("/deleteRoom")
@@ -32,19 +34,25 @@ public class RoomController {
     }
 
     @GetMapping("/getAllRoom")
-    public ResponseEntity<List<Room>> getAllRooms() {
+    public ResponseEntity<List<RoomResponseDTO>> getAllRooms() {
         return ResponseEntity.ok(roomService.getAllRooms());
     }
 
     @GetMapping("/getById")
-    public ResponseEntity<Room> getRoomById(@RequestParam Long id) {
+    public ResponseEntity<RoomResponseDTO> getRoomById(@RequestParam Long id) {
         return roomService.getRoomById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getByProperty")
-    public ResponseEntity<List<Room>> getRoomsByProperty(@RequestParam Long propertyId) {
+    public ResponseEntity<List<RoomResponseDTO>> getRoomsByProperty(@RequestParam Long propertyId) {
         return ResponseEntity.ok(roomService.getRoomsByProperty(propertyId));
     }
+
+    @GetMapping("/getByOwner")
+    public ResponseEntity<List<RoomResponseDTO>> getRoomsByOwner(@RequestParam String username) {
+        return ResponseEntity.ok(roomService.getRoomsByOwner(username));
+    }
+
 }

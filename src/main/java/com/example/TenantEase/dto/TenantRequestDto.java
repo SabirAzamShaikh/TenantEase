@@ -22,9 +22,9 @@ public class TenantRequestDto {
     @Pattern(regexp = "^[0-9]{12}$", message = "Aadhar card number must be 12 digits")
     private String adharNumber;
 
-    @NotBlank(message = "Room number is required")
-    @Pattern(regexp = "^[0-9]+$", message = "Room number must contain only digits")
-    private String roomNumber;
+//    @NotBlank(message = "Room number is required")
+//    @Pattern(regexp = "^[0-9]+$", message = "Room number must contain only digits")
+//    private String roomNumber;
 
     private String floorNumber;
 

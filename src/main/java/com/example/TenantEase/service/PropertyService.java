@@ -13,4 +13,5 @@ public interface PropertyService {
     Message<List<PropertyResponseDto>> getAllProperty(int page, int size);
     Message<String> deleteProperty(Long propertyId);
 
+    Message<List<PropertyResponseDto>> getPropertyByOwner(String ownerName);
 }

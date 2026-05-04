@@ -27,7 +27,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http.csrf(AbstractHttpConfigurer::disable) .cors(cors -> {}) // modern style
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "/v3/api-docs/**",     // OpenAPI Docs
                         "/swagger-ui/**",       // Swagger UI HTML
@@ -35,6 +35,7 @@ public class SecurityConfig {
                         "/v3/api-docs",         // API Docs JSON
                         "/swagger-resources/**" // Swagger Resources
                 ).permitAll()//Application-Maker==SUPER_ADMIN
+                        .requestMatchers(RoleApiConstant.SUPER_ADMIN).hasRole("SUPER_ADMIN")
                         .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN
                           .requestMatchers(RoleApiConstant.USER).hasRole("USER")//Tenant==USER
                         .anyRequest().authenticated())

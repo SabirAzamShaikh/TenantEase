@@ -8,22 +8,20 @@ import com.example.TenantEase.dto.PropertyRequestDto;
 import com.example.TenantEase.dto.PropertyResponseDto;
 import com.example.TenantEase.jwt.JwtUtil;
 import com.example.TenantEase.mapper.PropertyMapper;
-import com.example.TenantEase.model.ImageData;
 import com.example.TenantEase.model.Property;
 import com.example.TenantEase.model.User;
 import com.example.TenantEase.service.PropertyService;
+import com.example.TenantEase.util.UtilHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,8 @@ public class PropertyServiceImpl implements PropertyService {
     private final UserRepository userRepository;
     private final PropertyMapper propertyMapper;
     private final ImageDataRepository imageRepository;
+    private final UtilHelper utility;
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB per file
 
     @Override
     public Message<PropertyResponseDto> addProperty(PropertyRequestDto requestDto) {
@@ -42,25 +42,63 @@ public class PropertyServiceImpl implements PropertyService {
             String uuid;
             List<String> imagePath = new ArrayList<>();
             String token = util.extractTokenFromRequest();
-            String username = token != null ? util.extractUsername(token) : null;
-            User user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("User Not Found with Username " + username));
-            List<MultipartFile> file = requestDto.getPropertyImages();
-            for (MultipartFile f : file) {
-                ImageData imageData = new ImageData();
-                uuid = UUID.randomUUID().toString() + "_" + f.getName();
-                imageData.setName(uuid).setType(f.getContentType()).setImageData(f.getBytes());
-                imageRepository.save(imageData);
-                imagePath.add(uuid);
+            if (token == null) {
+                message.setResponseMessage("Authorization token not found");
+                message.setStatus(HttpStatus.UNAUTHORIZED);
+                return message;
             }
 
+            String username = util.extractUsername(token);
+            if (username == null) {
+                message.setResponseMessage("Invalid token - username cannot be extracted");
+                message.setStatus(HttpStatus.UNAUTHORIZED);
+                return message;
+            }
+
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("User Not Found with Email: " + username));
+           List<String> ImagePaths= utility.imageSaver(requestDto.getPropertyImages());
+//            List<MultipartFile> file = requestDto.getPropertyImages();
+//            if (file == null || file.isEmpty()) {
+//                message.setResponseMessage("Property images are required");
+//                message.setStatus(HttpStatus.BAD_REQUEST);
+//                return message;
+//            }
+//
+//            for (MultipartFile f : file) {
+//                // Validate file size
+//                if (f.getSize() > MAX_FILE_SIZE) {
+//                    message.setResponseMessage("File size exceeds 5MB limit: " + f.getOriginalFilename());
+//                    message.setStatus(HttpStatus.BAD_REQUEST);
+//                    return message;
+//                }
+//
+//                // Validate file type
+//                if (!isValidImageType(f.getContentType())) {
+//                    message.setResponseMessage("Invalid file type. Only image files are allowed: " + f.getOriginalFilename());
+//                    message.setStatus(HttpStatus.BAD_REQUEST);
+//                    return message;
+//                }
+//
+//                ImageData imageData = new ImageData();
+//               uuid = UUID.randomUUID().toString() + "_" + f.getOriginalFilename();
+//                imageData.setName(uuid).setType(f.getContentType()).setImageData(f.getBytes());
+//                imageRepository.save(imageData);
+//                imagePath.add(uuid);
+//            }
+
             Property property = propertyMapper.requestToEntity(requestDto);
-            property.setOwnerName(username).setPropertyImagePath(imagePath);
+            property.setOwnerName(username).setPropertyImagePath(ImagePaths);
             Property savedProperty = propertyRepository.save(property);
             message.setResponseMessage("Property saved successfully");
             message.setStatus(HttpStatus.CREATED);
             message.setData(propertyMapper.entityToResponseDto(savedProperty));
+        } catch (RuntimeException e) {
+            message.setResponseMessage("Error: " + e.getMessage());
+            message.setStatus(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to save property", e);
+            message.setResponseMessage("Failed to save property: " + e.getMessage());
+            message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return message;
     }
@@ -97,6 +135,27 @@ public class PropertyServiceImpl implements PropertyService {
         message.setStatus(HttpStatus.OK);
         message.setData("Deleted Property ID: " + propertyId);
         return message;
+    }
+
+    @Override
+    public Message<List<PropertyResponseDto>> getPropertyByOwner(String ownerName) {
+Message<List<PropertyResponseDto>> message=new Message<>();
+
+        List<PropertyResponseDto> byOwnerName = propertyRepository.findByOwnerName(ownerName).stream().map(propertyMapper::entityToResponseDto).toList();
+       message.setData(byOwnerName);
+       message.setStatus(HttpStatus.OK);
+       message.setResponseMessage("Property Fetched By Owner");
+        return message;
+    }
+
+    /**
+     * Validates if the file type is a valid image format
+     */
+    private boolean isValidImageType(String contentType) {
+        if (contentType == null) {
+            return false;
+        }
+        return contentType.startsWith("image/");
     }
 }
 

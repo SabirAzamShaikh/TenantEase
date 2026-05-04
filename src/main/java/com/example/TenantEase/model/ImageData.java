@@ -15,7 +15,7 @@ public class ImageData {
     private String name;
     private String type;
     @Lob
-    @Column(name = "image_data", length = 1000) // Adjust length as needed
+    @Column(name = "image_data", columnDefinition = "LONGBLOB")
     private byte[] imageData;
 
     // Constructors, getters, and setters
