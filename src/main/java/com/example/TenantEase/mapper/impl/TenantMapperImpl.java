@@ -48,6 +48,6 @@ public class TenantMapperImpl implements TenantMapper {
 
     @Override
     public TenantResponseDto EntityToResponseDto(Tenant tenant) {
-        return new TenantResponseDto().setTenantId(tenant.getTenantId()).setRoomNumber(tenant.getRoomNumber()).setIstenant(tenant.isTenant()).setDepositeAmount(tenant.getDepositeAmount()).setAdharNumber(tenant.getAdharNumber()).setPhoneNumber(tenant.getPhoneNumber()).setEmail(tenant.getEmail()).setName(tenant.getName()).setCreatedDate(tenant.getCreateTime()).setRents(tenant.getRents());
+        return new TenantResponseDto().setTenantId(tenant.getTenantId()).setRoomNumber(tenant.getRoomNumber()).setIstenant(tenant.isTenant()).setDepositeAmount(tenant.getDepositeAmount()).setAdharNumber(tenant.getAdharNumber()).setPhoneNumber(tenant.getPhoneNumber()).setEmail(tenant.getEmail()).setName(tenant.getName()).setCreatedDate(tenant.getCreateTime()).setRents(tenant.getRents()).setRentAmount(tenant.getRentAmount()).setRentPaymentDay(tenant.getRentPaymentDay());
     }
 }

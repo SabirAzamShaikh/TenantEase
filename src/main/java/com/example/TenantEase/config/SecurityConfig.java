@@ -29,11 +29,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable) .cors(cors -> {}) // modern style
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "/v3/api-docs/**",     // OpenAPI Docs
+                .authorizeHttpRequests(auth -> auth.requestMatchers("user/login", "user/register", "/v3/api-docs/**",     // OpenAPI Docs
                         "/swagger-ui/**",       // Swagger UI HTML
                         "/swagger-ui.html",     // Main Swagger UI Page
                         "/v3/api-docs",         // API Docs JSON
-                        "/swagger-resources/**" // Swagger Resources
+                        "/swagger-resources/**", // Swagger Resources
+                        "/api/webhook/**"       // Webhooks
                 ).permitAll()//Application-Maker==SUPER_ADMIN
                         .requestMatchers(RoleApiConstant.SUPER_ADMIN).hasRole("SUPER_ADMIN")
                         .requestMatchers(RoleApiConstant.ADMIN).hasAnyRole("SUPER_ADMIN", "ADMIN")//Owner==ADMIN

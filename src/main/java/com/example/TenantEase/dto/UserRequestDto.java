@@ -13,6 +13,8 @@ public class UserRequestDto {
     private String userType;
     private String email;
     private String contactNumber;
+    //From frontend we will get the subscription ID
+    private Long subscriptionPlanId;
     @NotNull(message = "Role ID cannot be null")
     private List<Integer> roleIds;
 }

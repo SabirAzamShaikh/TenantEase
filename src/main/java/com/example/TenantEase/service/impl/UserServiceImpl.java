@@ -1,15 +1,17 @@
 package com.example.TenantEase.service.impl;
 
-import com.example.TenantEase.Repository.RoleRepository;
-import com.example.TenantEase.Repository.UserRepository;
+import com.example.TenantEase.Repository.*;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.UserRequestDto;
 import com.example.TenantEase.dto.UserloginResponseDto;
+import com.example.TenantEase.enums.BillingCycle;
+import com.example.TenantEase.enums.PlanType;
+import com.example.TenantEase.enums.SubscriptionStatus;
 import com.example.TenantEase.jwt.JwtUtil;
 import com.example.TenantEase.mapper.UserMapper;
-import com.example.TenantEase.model.Role;
-import com.example.TenantEase.model.User;
+import com.example.TenantEase.model.*;
 import com.example.TenantEase.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,17 +37,24 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager manager;
     private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final UserSubscriptionRepository userSubscriptionRepository;
+    private final PlanUsageRepository planUsageRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, AuthenticationManager manager, PasswordEncoder encoder, JwtUtil jwtUtil) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, AuthenticationManager manager, PasswordEncoder encoder, JwtUtil jwtUtil, SubscriptionPlanRepository subscriptionPlanRepository, UserSubscriptionRepository userSubscriptionRepository, PlanUsageRepository planUsageRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.manager = manager;
         this.encoder = encoder;
         this.jwtUtil = jwtUtil;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
+        this.userSubscriptionRepository = userSubscriptionRepository;
+        this.planUsageRepository = planUsageRepository;
     }
 
     @Override
+    @Transactional
     public Message<User> createUser(UserRequestDto user) {
         Message<User> message = new Message<>();
         try {
@@ -61,6 +71,35 @@ public class UserServiceImpl implements UserService {
             }
             User requestDtoToEntity = userMapper.RequestDtoToEntity(user, roles);
             User savedUser = userRepository.save(requestDtoToEntity);
+
+            // Assign FREE plan automatically
+            SubscriptionPlan freePlan = subscriptionPlanRepository.findByPlanName("FREE")
+                    .orElseGet(() -> {
+                        SubscriptionPlan newFreePlan = new SubscriptionPlan();
+                        newFreePlan.setPlanName("FREE");
+                        newFreePlan.setDescription("Default Free Plan");
+                        newFreePlan.setPrice((long) PlanType.FREE.getPriceInPaisa());
+                        newFreePlan.setBillingCycle(BillingCycle.MONTHLY);
+                        newFreePlan.setMaxProperties((long) PlanType.FREE.getMaxProperties());
+                        newFreePlan.setMaxRooms((long) PlanType.FREE.getMaxRooms());
+                        newFreePlan.setMaxTenants((long) PlanType.FREE.getMaxTenants());
+                        newFreePlan.setActive(true);
+                        return subscriptionPlanRepository.save(newFreePlan);
+                    });
+
+            UserSubscription userSub = new UserSubscription();
+            userSub.setUser(savedUser);
+            userSub.setSubscriptionPlan(freePlan);
+            userSub.setStatus(SubscriptionStatus.ACTIVE);
+            userSub.setStartDate(LocalDateTime.now());
+            userSub.setAutoRenew(false);
+            userSub.setCreatedAt(LocalDateTime.now());
+            userSubscriptionRepository.save(userSub);
+
+            PlanUsage usage = new PlanUsage();
+            usage.setUser(savedUser);
+            planUsageRepository.save(usage);
+
             message.setStatus(HttpStatus.CREATED);
             message.setData(savedUser);
             message.setResponseMessage("User Created SuccessFully and Login Credentials are send on Your Email");

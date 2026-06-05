@@ -79,4 +79,7 @@ public class JwtUtil {
         return null;
     }
 
+    public Long extractUserId(String token) {
+        return 0L; // Placeholder: Implement logic to extract user ID from token claims
+    }
 }

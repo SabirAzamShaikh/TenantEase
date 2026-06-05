@@ -54,4 +54,14 @@ public class UtilHelper {
             return contentType.startsWith("image/");
 
         }
+
+
+    public void deleteImages(List<String> imageNames) {
+
+        if (imageNames == null || imageNames.isEmpty()) {
+            return;
+        }
+
+        imageNames.forEach(imageRepository::deleteByName);
+    }
     }

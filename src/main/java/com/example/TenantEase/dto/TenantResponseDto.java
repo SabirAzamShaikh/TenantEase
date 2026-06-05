@@ -18,6 +18,8 @@ public class TenantResponseDto implements Serializable {
     private String roomNumber;
     private Long depositeAmount;
     private boolean istenant;
+    private Long rentAmount;
+    private int rentPaymentDay;
     private LocalDate createdDate;
     private List<TenantRent> rents;
 }

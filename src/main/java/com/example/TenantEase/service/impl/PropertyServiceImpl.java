@@ -6,13 +6,19 @@ import com.example.TenantEase.Repository.UserRepository;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.PropertyRequestDto;
 import com.example.TenantEase.dto.PropertyResponseDto;
+import com.example.TenantEase.dto.PropertyUpdateRequestDto;
+import com.example.TenantEase.enums.ResourceType;
+import com.example.TenantEase.exception.ResourceNotFoundException;
 import com.example.TenantEase.jwt.JwtUtil;
 import com.example.TenantEase.mapper.PropertyMapper;
 import com.example.TenantEase.model.Property;
 import com.example.TenantEase.model.User;
+import com.example.TenantEase.service.PlanUsageService;
 import com.example.TenantEase.service.PropertyService;
+import com.example.TenantEase.util.CheckPlanLimit;
 import com.example.TenantEase.util.UtilHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +31,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
@@ -33,9 +40,11 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyMapper propertyMapper;
     private final ImageDataRepository imageRepository;
     private final UtilHelper utility;
+    private final PlanUsageService planUsageService;
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB per file
 
     @Override
+    @CheckPlanLimit(resource = ResourceType.PROPERTY)
     public Message<PropertyResponseDto> addProperty(PropertyRequestDto requestDto) {
         Message<PropertyResponseDto> message = new Message<>();
         try {
@@ -58,38 +67,11 @@ public class PropertyServiceImpl implements PropertyService {
             User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new RuntimeException("User Not Found with Email: " + username));
            List<String> ImagePaths= utility.imageSaver(requestDto.getPropertyImages());
-//            List<MultipartFile> file = requestDto.getPropertyImages();
-//            if (file == null || file.isEmpty()) {
-//                message.setResponseMessage("Property images are required");
-//                message.setStatus(HttpStatus.BAD_REQUEST);
-//                return message;
-//            }
-//
-//            for (MultipartFile f : file) {
-//                // Validate file size
-//                if (f.getSize() > MAX_FILE_SIZE) {
-//                    message.setResponseMessage("File size exceeds 5MB limit: " + f.getOriginalFilename());
-//                    message.setStatus(HttpStatus.BAD_REQUEST);
-//                    return message;
-//                }
-//
-//                // Validate file type
-//                if (!isValidImageType(f.getContentType())) {
-//                    message.setResponseMessage("Invalid file type. Only image files are allowed: " + f.getOriginalFilename());
-//                    message.setStatus(HttpStatus.BAD_REQUEST);
-//                    return message;
-//                }
-//
-//                ImageData imageData = new ImageData();
-//               uuid = UUID.randomUUID().toString() + "_" + f.getOriginalFilename();
-//                imageData.setName(uuid).setType(f.getContentType()).setImageData(f.getBytes());
-//                imageRepository.save(imageData);
-//                imagePath.add(uuid);
-//            }
 
             Property property = propertyMapper.requestToEntity(requestDto);
             property.setOwnerName(username).setPropertyImagePath(ImagePaths);
             Property savedProperty = propertyRepository.save(property);
+            planUsageService.incrementUsage(user.getUserId(), ResourceType.PROPERTY);
             message.setResponseMessage("Property saved successfully");
             message.setStatus(HttpStatus.CREATED);
             message.setData(propertyMapper.entityToResponseDto(savedProperty));
@@ -100,6 +82,61 @@ public class PropertyServiceImpl implements PropertyService {
             message.setResponseMessage("Failed to save property: " + e.getMessage());
             message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return message;
+    }
+
+    @CheckPlanLimit(resource = ResourceType.PROPERTY)
+    @Override
+    public Message<PropertyResponseDto> updateProperty(PropertyUpdateRequestDto propertyUpdateDto) {
+        log.info("Updating property with ID: {}", propertyUpdateDto.getPropertyId());
+        Message<PropertyResponseDto> message = new Message<>();
+
+        try {
+            // Fetch existing property
+            Property existingProperty = propertyRepository.findById(propertyUpdateDto.getPropertyId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Property not found with ID: " + propertyUpdateDto.getPropertyId()));
+
+            // Update fields if provided
+            if (propertyUpdateDto.getPropertyName() != null) {
+                existingProperty.setName(propertyUpdateDto.getPropertyName());
+            }
+            if (propertyUpdateDto.getAddress() != null) {
+                existingProperty.setAddress(propertyUpdateDto.getAddress());
+            }
+//            if (propertyUpdateDto.getCity() != null) {
+//                existingProperty.setcCity(propertyUpdateDto.getCity());
+//            }
+//            if (propertyUpdateDto.getState() != null) {
+//                existingProperty.setState(propertyUpdateDto.getState());
+//            }
+//            if (propertyUpdateDto.getZipCode() != null) {
+//                existingProperty.setZipCode(propertyUpdateDto.getZipCode());
+//            }
+            if (propertyUpdateDto.getTotalRooms() != null) {
+                existingProperty.setTotalRooms(propertyUpdateDto.getTotalRooms());
+            }
+            if (propertyUpdateDto.getPropertyType() != null) {
+                existingProperty.setType(propertyUpdateDto.getPropertyType());
+            }
+
+
+            // Save updated property
+            Property updatedProperty = propertyRepository.save(existingProperty);
+
+            message.setResponseMessage("Property updated successfully");
+            message.setStatus(HttpStatus.OK);
+            message.setData(propertyMapper.entityToResponseDto(updatedProperty));
+
+        } catch (ResourceNotFoundException e) {
+            log.error("Property not found: ", e);
+            message.setResponseMessage(e.getMessage());
+            message.setStatus(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Error updating property: ", e);
+            message.setResponseMessage("Failed to update property: " + e.getMessage());
+            message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         return message;
     }
 
@@ -130,7 +167,12 @@ public class PropertyServiceImpl implements PropertyService {
         Message<String> message = new Message<>();
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Property not found with id: " + propertyId));
+        
+        User user = userRepository.findByEmail(property.getOwnerName())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
         propertyRepository.delete(property);
+        planUsageService.decrementUsage(user.getUserId(), ResourceType.PROPERTY);
         message.setResponseMessage("Property deleted successfully");
         message.setStatus(HttpStatus.OK);
         message.setData("Deleted Property ID: " + propertyId);

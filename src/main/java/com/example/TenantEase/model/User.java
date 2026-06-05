@@ -28,15 +28,12 @@ public class User {
     @Column(nullable = true, length = 36)
     private String updatedBy;
 
+
     @Column(nullable = true)
     private LocalDateTime updatedAt;
     @Column(nullable = false, length = 20)
     private String status;
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 }

@@ -3,12 +3,16 @@ package com.example.TenantEase.service;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.TenantRequestDto;
 import com.example.TenantEase.dto.TenantResponseDto;
+import com.example.TenantEase.dto.TenantUpdateRequestDto;
 
 import java.util.List;
 
 public interface TenantService {
 
     Message<TenantResponseDto> addTenant(TenantRequestDto tenant, Long roomId);
+
+    Message<TenantResponseDto> updateTenant(TenantUpdateRequestDto tenantUpdateDto);
+
     Message<List<TenantResponseDto>> getAllTenant();
 
     //    @Cacheable(value = "tenant")

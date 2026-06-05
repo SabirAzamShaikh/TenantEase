@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, Long> {
     List<Property> findByOwnerName(String ownerName);
+
+    Object countByOwnerName(String email);
 }

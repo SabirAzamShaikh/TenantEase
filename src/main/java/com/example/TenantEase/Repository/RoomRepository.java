@@ -10,9 +10,14 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByProperty(Property property);
+
     List<Room> findByAvailable(boolean available);
+
     List<Room> findByStatus(String status);
 
     List<Room> findByPropertyPropertyId(Long propertyId);
+
     List<Room> findByCreatedBy(String ownerUsername);
+
+    Object countByCreatedBy(String email);
 }

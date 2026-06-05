@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TenantRepository extends JpaRepository<Tenant,Long> {
+public interface TenantRepository extends JpaRepository<Tenant, Long> {
 
-List<Tenant> findAllByCreatedBy(String createdBy);
+    List<Tenant> findAllByCreatedBy(String createdBy);
 
-Optional<Tenant> findByEmail(String email);
+    Optional<Tenant> findByEmail(String email);
+
+    Object countByCreatedBy(String email);
 }

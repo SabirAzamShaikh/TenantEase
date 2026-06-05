@@ -3,10 +3,12 @@ package com.example.TenantEase.controller;
 import com.example.TenantEase.dto.Message;
 import com.example.TenantEase.dto.PropertyRequestDto;
 import com.example.TenantEase.dto.PropertyResponseDto;
+import com.example.TenantEase.dto.PropertyUpdateRequestDto;
 import com.example.TenantEase.service.PropertyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,15 +20,29 @@ import java.util.List;
 public class PropertyController {
     private final PropertyService propertyService;
 
-    @PostMapping(value = "/addProperty", consumes = {"multipart/form-data"})
-    public Message<PropertyResponseDto> addProperty(@ModelAttribute PropertyRequestDto property) {
+    @PostMapping(value = "/addProperty", consumes = { "multipart/form-data" })
+    public ResponseEntity<Message<PropertyResponseDto>> addProperty(@ModelAttribute PropertyRequestDto property) {
         log.info("In PropertyController with request Dto {}", property);
         try {
-            return propertyService.addProperty(property);
+            return ResponseEntity.status(HttpStatus.OK).body(propertyService.addProperty(property));
         } catch (Exception e) {
             log.error("Error in addProperty: ", e);
             Message<PropertyResponseDto> errorMessage = new Message<>();
             errorMessage.setResponseMessage("Failed to add property: " + e.getMessage());
+            errorMessage.setStatus(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
+    }
+
+    @PutMapping(value = "/updateProperty", consumes = { "multipart/form-data" })
+    public Message<PropertyResponseDto> updateProperty(@ModelAttribute PropertyUpdateRequestDto propertyUpdateDto) {
+        log.info("In PropertyController updateProperty with request Dto {}", propertyUpdateDto);
+        try {
+            return propertyService.updateProperty(propertyUpdateDto);
+        } catch (Exception e) {
+            log.error("Error in updateProperty: ", e);
+            Message<PropertyResponseDto> errorMessage = new Message<>();
+            errorMessage.setResponseMessage("Failed to update property: " + e.getMessage());
             errorMessage.setStatus(HttpStatus.BAD_REQUEST);
             return errorMessage;
         }

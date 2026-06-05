@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class TenantRequestDto {
+
     private String name;
 
     @NotBlank(message = "Email is required")
@@ -22,15 +23,10 @@ public class TenantRequestDto {
     @Pattern(regexp = "^[0-9]{12}$", message = "Aadhar card number must be 12 digits")
     private String adharNumber;
 
-//    @NotBlank(message = "Room number is required")
-//    @Pattern(regexp = "^[0-9]+$", message = "Room number must contain only digits")
-//    private String roomNumber;
-
-    private String floorNumber;
-
     private Long depositeAmount;
     @NotNull(message = "Tenant Rent is required")
     @Positive(message = "Tenant Rent must be > 0")
+
     private Long tenantRent;
 
     @NotNull(message = "Payment Day is required")

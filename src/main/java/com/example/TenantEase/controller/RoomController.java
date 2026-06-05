@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/rooms")
@@ -18,12 +18,14 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping(value = "/addRoom", consumes = { "multipart/form-data" })
-    public ResponseEntity<RoomResponseDTO> addRoom(@ModelAttribute RoomRequestDTO roomRequestDTO, @RequestParam Long propertyId) {
+    public ResponseEntity<RoomResponseDTO> addRoom(@ModelAttribute RoomRequestDTO roomRequestDTO,
+            @RequestParam Long propertyId) {
         return ResponseEntity.ok(roomService.addRoom(roomRequestDTO, propertyId));
     }
 
-    @PutMapping("/updateRoom")
-    public ResponseEntity<RoomResponseDTO> updateRoom(@RequestParam Long id, @RequestBody RoomRequestDTO updatedRoomDTO) {
+    @PutMapping(value = "/updateRoom", consumes = { "multipart/form-data" })
+    public ResponseEntity<RoomResponseDTO> updateRoom(@RequestParam Long id,
+            @ModelAttribute RoomRequestDTO updatedRoomDTO) throws IOException {
         return ResponseEntity.ok(roomService.updateRoom(id, updatedRoomDTO));
     }
 

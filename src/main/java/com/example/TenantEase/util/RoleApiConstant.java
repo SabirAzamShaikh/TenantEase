@@ -15,14 +15,20 @@ public interface RoleApiConstant {
             "/rent/paymentDone",
             "/rent/getRentDetails",
             //Ticket Controller endpoints
+            //Ticket Controller endpoints
             "/ticket/create",
             "/ticket/image/*",
-            "/ticket/getImageByTicketId"
+            "/ticket/getImageByTicketId",
+            //Subscription Controller endpoints (Home Owner)
+            "/api/subscription/**",
+            "/api/payment/**"
     };
     public final static String[] USER = {"/tenant/getTenantById"};
     public final static String[] SUPER_ADMIN = {
             "/tenant/getAllTenant",
             "/user/getAllUser", "/role/createRole", "/role/getById", "/role/getAll",
-            "/permission/createPermission", "/permission/getAll"
+            "/permission/createPermission", "/permission/getAll",
+            // Admin Subscription Endpoints
+            "/api/admin/**"
     };
 }
